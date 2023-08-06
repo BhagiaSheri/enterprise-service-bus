@@ -1,6 +1,6 @@
 package esb;
 
-public class ShippingRouter {
+public class DomesticShippingRouter {
 
     public String route(Order order) {
         String destinationChannel = null;

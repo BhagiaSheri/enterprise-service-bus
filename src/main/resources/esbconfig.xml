@@ -7,19 +7,28 @@
 			http://www.springframework.org/schema/integration
 			http://www.springframework.org/schema/integration/spring-integration.xsd">
 
-	<channel id="wharehousechannel"/>
+	<channel id="warehouseChannel"/>
 	<channel id="shippingChannel"/>
+	<channel id="domesticShippingChannel"/>
+	<channel id="internationalShippingChannel"/>
 	<channel id="defaultShippingChannel"/>
 	<channel id="nextDayShippingChannel"/>
 
-	<service-activator input-channel="wharehousechannel"
+	<service-activator input-channel="warehouseChannel"
 					   output-channel="shippingChannel"
-					   ref="warehouseservice"
+					   ref="warehouseService"
 					   method="checkStock"/>
 
 	<router method="route" input-channel="shippingChannel">
-		<beans:bean class="esb.ShippingRouter"/>
+		<beans:bean class="esb.InternationalShippingRouter"/>
 	</router>
+
+	<router method="route" input-channel="domesticShippingChannel">
+		<beans:bean class="esb.DomesticShippingRouter"/>
+	</router>
+
+	<service-activator input-channel="internationalShippingChannel"
+					   ref="internationalShippingService" method="ship"/>
 
 	<service-activator input-channel="defaultShippingChannel"
 					   ref="defaultShippingService" method="ship"/>
@@ -27,7 +36,8 @@
 	<service-activator input-channel="nextDayShippingChannel"
 					   ref="nextDayShippingService" method="ship"/>
 
-	<beans:bean id="warehouseservice" class="esb.WarehouseActivator"/>
+	<beans:bean id="warehouseService" class="esb.WarehouseActivator"/>
+	<beans:bean id="internationalShippingService" class="esb.InternationalShippingActivator"/>
 	<beans:bean id="defaultShippingService" class="esb.DefaultShippingActivator"/>
 	<beans:bean id="nextDayShippingService" class="esb.NextDayShippingActivator"/>
 
